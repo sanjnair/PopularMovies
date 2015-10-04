@@ -10,4 +10,5 @@
     <string name="no_movies">Movies are not available</string>
     <string name="btn_mark_favorite">MARK AS FAVORITE</string>
     <string name="btn_unmark_favorite">UNMARK AS FAVORITE</string>
+    <string name="share">Share</string>
 </resources>

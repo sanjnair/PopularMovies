@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -22,6 +21,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import com.example.xmatrix.popularmovies.data.MovieDataSource;
+
+import android.support.v7.widget.ShareActionProvider;
+import android.support.v4.view.MenuItemCompat;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.MenuInflater;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,6 +42,7 @@ public class DetailFragment extends Fragment {
     final String YOUTUBE_NATIVE     = "vnd.youtube:";
     final String YOUTUBE_BROWSER    = "http://www.youtube.com/watch?v=";
 
+    ShareActionProvider mShareActionProvider;
     Bundle m_Items;
     TrailerListAdapter m_TrailerAdapter;
     ReviewListAdapter m_ReviewAdapter;
@@ -61,6 +67,7 @@ public class DetailFragment extends Fragment {
             Log.d(LOG_TAG, "DetailFragment:onCreate. KEY = " + BundleKeys.MOVIE_ID);
             m_Items = args;
         }
+        setHasOptionsMenu(true);
     }
 
     /**
@@ -159,6 +166,38 @@ public class DetailFragment extends Fragment {
         }
 
         return m_RootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_detail, menu);
+        super.onCreateOptionsMenu(menu,inflater);
+
+        // Locate MenuItem with ShareActionProvider
+        MenuItem item = menu.findItem(R.id.menu_action_share);
+
+        // Fetch and store ShareActionProvider
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+    }
+
+    // Call to update the share intent
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
+    }
+
+    /**
+     * Creates a Share Intent for Trailers
+     * @return
+     */
+    private Intent createShareIntentForTrailer(String sUrl) {
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Movie Trailer");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, sUrl);
+
+        return shareIntent;
     }
 
     /**
@@ -299,10 +338,19 @@ public class DetailFragment extends Fragment {
         if ((result != null) && !result.isEmpty() && (m_TrailerAdapter != null)) {
             m_TrailerAdapter.setData(result);
             m_TrailerLayoutView.setVisibility(View.VISIBLE);
+
+            // Share the First Trailer if available
+            Bundle trailerItem = m_TrailerAdapter.GetDataItem(0);
+            String sUrl = trailerItem.getString(BundleKeys.TRAILER_KEY);
+            sUrl = YOUTUBE_BROWSER + sUrl;
+            Intent intent = createShareIntentForTrailer(sUrl);
+            setShareIntent(intent);
         }
         else
         {
             m_TrailerLayoutView.setVisibility(View.GONE);
+            // Locate MenuItem with ShareActionProvider
+            setShareIntent(new Intent());
         }
     }
 

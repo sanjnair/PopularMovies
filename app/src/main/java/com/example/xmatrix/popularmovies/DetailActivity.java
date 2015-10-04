@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
+
 public class DetailActivity extends AppCompatActivity {
     public static final String ARG_ITEM_ID = "item_id";
     private final String LOG_TAG = DetailActivity.class.getSimpleName();

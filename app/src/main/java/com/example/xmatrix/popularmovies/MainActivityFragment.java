@@ -143,15 +143,22 @@ public class MainActivityFragment extends Fragment {
                 (m_SortOrder == null) ||
                 !sort_order.equals(m_SortOrder)) {
 
-            m_ImgAdapter.clear();
             String sFavorites = getString(R.string.pref_sort_order_favorites_val);
 
             if (sort_order.equals(sFavorites)) {
                 fetchMovieFromDb();
 
             } else {
-                FetchMovieTask movieTask = new FetchMovieTask();
-                movieTask.execute(sort_order);
+                if (HttpJson.isNetworkAvailable(getActivity()))
+                {
+                    FetchMovieTask movieTask = new FetchMovieTask();
+                    movieTask.execute(sort_order);
+                }
+                else
+                {
+                    // Clear the movie list
+                    setMovieList(null);
+                }
             }
             m_SortOrder = sort_order;
         }

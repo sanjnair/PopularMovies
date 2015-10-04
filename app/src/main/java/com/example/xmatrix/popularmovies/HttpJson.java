@@ -1,5 +1,7 @@
 package com.example.xmatrix.popularmovies;
 
+import android.content.Context;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -9,7 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+import android.net.ConnectivityManager;
+import android.app.Activity;
 /**
  * Created by xmatrix on 8/20/2015.
  *
@@ -75,5 +78,16 @@ public final class HttpJson {
         }
 
         return sResponse;
+    }
+
+    /**
+     * Returns true if network is available
+     *
+     */
+    public static boolean isNetworkAvailable(Activity activity) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }
